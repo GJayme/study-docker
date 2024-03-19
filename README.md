@@ -138,6 +138,12 @@ Comando de exemplo básico de criação de uma imagem:
 docker build -t gabrieljayme/nginx-com-vim:latest .
 ```
 
+Criando image com outro nome:
+
+```
+docker build -t gabrieljayme/laravel:prod . -f Dockerfile.prod
+```
+
 A flag -t é a nossa Tag seguida do nosso usuario do DockerHub. No final temos um 'ponto final' que é o caminho onde está localizado o nosso Dockerfile.
 
 ### WORKDIR
@@ -228,3 +234,65 @@ Geralmente para criamor imagens bem pequenas nós utilizamos imagens do Alpine L
 ### Otimização utilizando Multistage Building
 Multistage Building nada mais é do que você faz o processo de build da sua imagem em duas ou mais etapas. Ou seja, nós temos o estágio inicial (onde a gente gerta a imagem) e o próximo estágio que é onde nós otimizamos a nossa imagem.
 
+# Docker-compose
+Vem para facilitar o trabalho com Docker. O Docker-compose é uma ferramenta complementar ao Docker que baseada em um arquivo de manifesto (yaml) consegue pegar todos os containers que você deseja subir e ele sobe de maneira automática.
+
+## Iniciando com Docker-compose
+Exemplo de docker-compose:
+```
+version: '3'
+
+services:
+
+  laravel:
+    image: gabrieljayme/laravel:prod
+    container_name: laravel
+    networks:
+      - laranet
+  
+  nginx:
+    image: gabrieljayme/nginx:prod
+    container_name: nginx
+    networks:
+      - laranet
+    ports:
+      ["8080:80"]
+
+networks:
+  laranet:
+    driver: bridge
+```
+### Comandos básicos:
+- docker-compose up: sobe todos os containers
+- docker-compose down: remove todos os containers
+- -d: detached, libera o terminal após rodar o comando
+- docker-compose ps: tras apenas os containers que estão rodando utilizados pelo compose
+- --build: flag usada para rebuildar as imagens durante o comando up
+
+## Buildando imagens com Docker-compose
+Nós podemos buildar uma imagem em tempo de execução do docker-compose up. Para fazer isso é necessário passar o path com o respectivo dockerfile da imagem.
+
+```
+.
+.
+.
+
+services:
+
+  laravel:
+    build:
+      context: ./laravel
+      dockerfile: Dockerfile.prod
+    image: gabrieljayme/laravel:prod
+    container_name: laravel
+    networks:
+      - laranet
+.
+.
+.
+```
+No exemplo acima nós estamos criando a imagem laravel passando do o caminho até o dockerfile (context) e o respectivo nome do dockerfile.
+## Criando banco de dados MySQL
+## Configurando app node com Docker-compose
+## Node vs MySQL
+## Dependência entre containers
